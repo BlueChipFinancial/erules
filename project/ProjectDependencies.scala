@@ -50,6 +50,7 @@ object ProjectDependencies {
   object Scalatest {
     lazy val dedicated: Def.Initialize[Seq[ModuleID]] = Def.setting(
       Seq(
+        "org.scalatest" %%% "scalatest" % "3.2.19",
         "org.typelevel" %%% "cats-effect-testing-scalatest" % "1.6.0"
       )
     )
