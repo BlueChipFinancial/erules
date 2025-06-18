@@ -2,13 +2,13 @@ import sbt.project
 import ModuleMdocPlugin.autoImport.mdocScalacOptions
 import sbtcrossproject.{CrossProject, CrossType, Platform}
 
-lazy val prjName                = "erules"
-lazy val prjPackageName         = prjName.replaceAll("[^\\p{Alpha}\\d]+", ".")
-lazy val prjDescription         = "A rules engine evaluator"
-lazy val prjOrg                 = "com.github.geirolz"
-lazy val scala213               = "2.13.14"
-lazy val scala33                = "3.3.5"
-lazy val supportedScalaVersions = List(scala213, scala33)
+lazy val prjName = "erules"
+lazy val prjPackageName = prjName.replaceAll("[^\\p{Alpha}\\d]+", ".")
+lazy val prjDescription = "A rules engine evaluator"
+lazy val prjOrg = "com.github.geirolz"
+lazy val scala2 = "2.13.16"
+lazy val scala3 = "3.6.4"
+lazy val supportedScalaVersions = List(scala2, scala3)
 
 //## global project to no publish ##
 lazy val erules: Project = project
@@ -49,9 +49,9 @@ lazy val erules: Project = project
 lazy val core: CrossProject =
   buildModule(
     prjModuleName = "core",
-    toPublish     = true,
-    folder        = ".",
-    platforms     = JSPlatform,
+    toPublish = true,
+    folder = ".",
+    platforms = JSPlatform,
     JVMPlatform
   ).settings(
     mdocOut := file("."),
@@ -61,9 +61,9 @@ lazy val core: CrossProject =
 lazy val generic: CrossProject =
   buildModule(
     prjModuleName = "generic",
-    toPublish     = true,
-    folder        = "modules",
-    platforms     = JSPlatform,
+    toPublish = true,
+    folder = "modules",
+    platforms = JSPlatform,
     JVMPlatform
   ).dependsOn(core)
     .settings(
@@ -76,9 +76,9 @@ lazy val generic: CrossProject =
 lazy val circe: CrossProject =
   buildModule(
     prjModuleName = "circe",
-    toPublish     = true,
-    folder        = "modules",
-    platforms     = JSPlatform,
+    toPublish = true,
+    folder = "modules",
+    platforms = JSPlatform,
     JVMPlatform
   ).dependsOn(core)
     .settings(
@@ -88,9 +88,9 @@ lazy val circe: CrossProject =
 lazy val `cats-xml`: CrossProject =
   buildModule(
     prjModuleName = "cats-xml",
-    toPublish     = true,
-    folder        = "modules",
-    platforms     = JVMPlatform
+    toPublish = true,
+    folder = "modules",
+    platforms = JVMPlatform
   ).dependsOn(core)
     .settings(
       libraryDependencies ++= ProjectDependencies.CatsXml.dedicated.value
@@ -99,9 +99,9 @@ lazy val `cats-xml`: CrossProject =
 lazy val scalatest: CrossProject =
   buildModule(
     prjModuleName = "scalatest",
-    toPublish     = true,
-    folder        = "modules",
-    platforms     = JSPlatform,
+    toPublish = true,
+    folder = "modules",
+    platforms = JSPlatform,
     JVMPlatform
   ).dependsOn(core)
     .settings(
@@ -110,14 +110,14 @@ lazy val scalatest: CrossProject =
 
 //=============================== MODULES UTILS ===============================
 def buildModule(
-  prjModuleName: String,
-  toPublish: Boolean,
-  folder: String,
-  platforms: Platform*
-): CrossProject = {
-  val keys       = prjModuleName.split("-")
-  val docName    = keys.mkString(" ")
-  val prjFile    = file(s"$folder/$prjModuleName")
+                 prjModuleName: String,
+                 toPublish: Boolean,
+                 folder: String,
+                 platforms: Platform*
+               ): CrossProject = {
+  val keys = prjModuleName.split("-")
+  val docName = keys.mkString(" ")
+  val prjFile = file(s"$folder/$prjModuleName")
   val docNameStr = s"$prjName $docName"
   CrossProject(s"$prjName-$prjModuleName", prjFile)(platforms: _*)
     .crossType(CrossType.Pure)
@@ -131,11 +131,11 @@ def buildModule(
       mdocOut := prjFile,
       mdocScalacOptions := Seq("-Xsource:3"),
       mdocVariables := Map(
-        "ORG"         -> prjOrg,
-        "PRJ_NAME"    -> prjName,
-        "DOCS_TITLE"  -> docNameStr.split(" ").map(_.capitalize).mkString(" "),
+        "ORG" -> prjOrg,
+        "PRJ_NAME" -> prjName,
+        "DOCS_TITLE" -> docNameStr.split(" ").map(_.capitalize).mkString(" "),
         "MODULE_NAME" -> moduleName.value,
-        "VERSION"     -> previousStableVersion.value.getOrElse("<version>")
+        "VERSION" -> previousStableVersion.value.getOrElse("<version>")
       )
     )
     .enablePlugins(ModuleMdocPlugin)
@@ -164,8 +164,8 @@ lazy val baseSettings: Seq[Def.Setting[_]] = Seq(
   libraryDependencies ++= ProjectDependencies.common.value ++ {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, 13)) => ProjectDependencies.Plugins.compilerPluginsFor2_13
-      case Some((3, _))  => ProjectDependencies.Plugins.compilerPluginsFor3
-      case _             => Nil
+      case Some((3, _)) => ProjectDependencies.Plugins.compilerPluginsFor3
+      case _ => Nil
     }
   },
   // fmt
@@ -186,7 +186,7 @@ def scalacSettings(scalaVersion: String): Seq[String] =
     CrossVersion.partialVersion(scalaVersion) match {
       case Some((3, _)) =>
         Seq(
-          "-Ykind-projector",
+          "-Xkind-projector",
           "-explain-types", // Explain type errors in more detail.
           "-Xfatal-warnings" // Fail the compilation if there are any warnings.
         )
